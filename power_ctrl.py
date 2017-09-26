@@ -193,7 +193,7 @@ class aw2401:
 
     def connect(self):
         """
-        Connect to target SP8H.
+        Connect to target AW-2401.
         """
 
         #TODO: check parameters if valid.
@@ -202,7 +202,7 @@ class aw2401:
 
     def disconnect(self):
         """
-        Disconnect from target SP8H.
+        Disconnect from target AW-2401.
         """
         if self.is_connected:
             self.conn.close()
