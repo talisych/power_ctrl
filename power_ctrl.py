@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from http import cookies
+from bs4 import BeautifulSoup
 import http.client
 import sys
 import urllib.parse
@@ -21,6 +22,7 @@ class sp8h:
     LOGIN_URL = "/login_auth.csp"
     LOGOUT_URL = "/logout.csp"
     POWER_CTL_URL = "/power_monitor_frame.csp"
+    POWER_STS_URL = POWER_CTL_URL
 
     def __init__(self):
         self.port = 80
@@ -161,6 +163,51 @@ class sp8h:
         if response.status != http.client.OK:
             sys.exit("Failed to login, status=" + response.status)
 
+    def get_status(self, machin_id=0):
+        """
+        Get the status of power port.
+        """
+
+        if not self.is_login:
+            sys.exit("Login first!")
+
+        self.http_header = {"Cookie": self.cookie_db.output(header="", sep=";")}
+
+        #DBG: print http header
+        #print(self.http_header)
+
+        self.http_params = urllib.parse.urlencode({'srm_no': machin_id})
+        #DBG: print http params
+        #print(self.http_params)
+
+        url = '{url}?{params}'.format(url=self.POWER_STS_URL, params=self.http_params)
+
+        try:
+            self.conn.request("GET", url, self.http_params, self.http_header)
+            response = self.conn.getresponse()
+        except (OSError, ConnectionResetError) as e:
+            sys.exit('Error:' + str(e))
+
+        if response.status != http.client.OK:
+            sys.exit("Failed to login, status=" + response.status)
+
+        html_data = response.read().decode("utf-8")
+
+        #For Debug
+        #print(html_data)
+
+        #Parse power status.
+        status_list = html_data.split("],[")[1][1:-1].split("','")
+        #print(status_list)
+
+        #Parse power ampere.
+        ampere_list = html_data.split("],[")[2][1:-3].split("','")
+        #print(ampere_list)
+
+        merge_list = [list(a) for a in zip(status_list, ampere_list)]
+        #print(merge_list)
+        return merge_list
+
 class aw2401:
     """
     A python class to access cloud power AW-2401.
@@ -173,6 +220,7 @@ class aw2401:
     POWER_ON = 1
 
     POWER_CTL_URL = "/set_port_mode.html"
+    POWER_STS_URL = "/get_port_mode.html"
 
     def __init__(self):
         self.port = 80
@@ -253,3 +301,35 @@ class aw2401:
         if response.status != http.client.OK:
             sys.exit("Failed to login, status=" + response.status)
 
+    def get_status(self):
+        """
+        Get the status of power port.
+        """
+
+        self.http_header = {"Content-type": "application/x-www-form-urlencoded"}
+
+        url = self.POWER_STS_URL
+
+        try:
+            self.conn.request("GET", url, "", self.http_header)
+            response = self.conn.getresponse()
+        except (OSError, ConnectionResetError) as e:
+            sys.exit('Error:' + str(e))
+
+        if response.status != http.client.OK:
+            sys.exit("Failed to login, status=" + response.status)
+
+        html_data = response.read()
+
+        #For Debug
+        #print(html_data)
+
+        soup = BeautifulSoup(html_data, "html.parser")
+        foundTags = soup.find_all('input')
+        #print(foundTags)
+        power_state = []
+        for inpTag in foundTags:
+             #print(inpTag['value'])
+             power_state.append(inpTag['value'])
+
+        return power_state
