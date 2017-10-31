@@ -31,16 +31,16 @@ def main():
     sp8h_parser.add_argument('--user'           , '-U', type=str        , help="Username for login SP8H", default='admin')
     sp8h_parser.add_argument('--passwd'         , '-P', type=str        , help="Password for login SP8H", default='admin')
     sp8h_parser.add_argument('--machine-id'     , '-m', type=int        , help="Select machine id", nargs='+', choices=range(1,5), required=True)
-    sp8h_parser.add_argument('--power-id'       , '-p', type=int        , help="Select power id", nargs='+', choices=range(1,9), required=True)
-    sp8h_parser.add_argument('--power-status'   , '-s', type=str        , help="Set power status", choices=['on', 'off'], required=True)
-    sp8h_parser.add_argument('--get-status'   , '-g', help="Get power status", action="store_true")
+    sp8h_parser.add_argument('--power-id'       , '-p', type=int        , help="Select power id", nargs='+', choices=range(1,9))
+    sp8h_parser.add_argument('--power-status'   , '-s', type=str        , help="Set power status", choices=['on', 'off'])
+    sp8h_parser.add_argument('--get-status'     , '-g', help="Get power status", action="store_true")
     sp8h_parser.add_argument('--verbose'        , '-v', help="Increase output verbosity", action="store_true")
 
     #aw2401 command
     aw2401_parser = subparsers.add_parser('aw2401', help="Target is an AW2401 device.", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     aw2401_parser.add_argument('--device-ip'    , '-i', type=ip_address , help="Device ip address", required=True)
-    aw2401_parser.add_argument('--power-id'     , '-p', type=int        , help="Select power id", nargs='+', choices=range(1,5), required=True)
-    aw2401_parser.add_argument('--power-status' , '-s', type=str        , help="Set power status", choices=['on', 'off'], required=True)
+    aw2401_parser.add_argument('--power-id'     , '-p', type=int        , help="Select power id", nargs='+', choices=range(1,5))
+    aw2401_parser.add_argument('--power-status' , '-s', type=str        , help="Set power status", choices=['on', 'off'])
     aw2401_parser.add_argument('--get-status'   , '-g', help="Get power status", action="store_true")
     aw2401_parser.add_argument('--verbose'      , '-v', help="Increase output verbosity", action="store_true")
 
@@ -52,8 +52,11 @@ def main():
     if not args.device:
         parser.print_help()
 
+    if (not args.power_id and not args.power_status) and (not args.get_status):
+        parser.error('the following arguments are required: --power-id/-p and --power_status/-s or --get_status/-g')
+
     # delete duplicate item
-    if hasattr(args, 'power_id'):
+    if args.power_id and hasattr(args, 'power_id'):
         args.power_id = sorted(set(args.power_id), key=args.power_id.index)
         #print(args.power_id)
 
@@ -69,17 +72,18 @@ def main():
         o_sp8h.passwd = args.passwd
         o_sp8h.connect()
         if o_sp8h.login() == None:
-            if args.verbose:
-                sys.stdout.write('\nSet power status for SP8H:\n')
-            for mid in args.machine_id:
-                for pid in args.power_id:
-                    if args.verbose:
-                        sys.stdout.write('  Machine: {}, power_id: {}, power_status {:>3s}\n'.format((mid), (pid), (args.power_status)))
-                    time.sleep(0.7)
-                    o_sp8h.switch(mid, pid, 1 if args.power_status == 'on' else 2)
+            if args.power_id and args.power_status:
+                if args.verbose:
+                    sys.stdout.write('\nSet power status for SP8H:\n')
+                for mid in args.machine_id:
+                    for pid in args.power_id:
+                        if args.verbose:
+                            sys.stdout.write('  Machine: {}, power_id: {}, power_status {:>3s}\n'.format((mid), (pid), (args.power_status)))
+                        time.sleep(0.7)
+                        o_sp8h.switch(mid, pid, 1 if args.power_status == 'on' else 2)
 
             if args.get_status:
-                sys.stdout.write('\nDump power status from SP8H:\n')
+                sys.stdout.write('\nGet power status from SP8H:\n')
                 for mid in args.machine_id:
                     time.sleep(1)
                     status_data = o_sp8h.get_status(mid)
@@ -98,16 +102,19 @@ def main():
         o_aw2401 = aw2401()
         o_aw2401.target_url = str(args.device_ip)
         o_aw2401.connect()
-        if args.verbose:
-            sys.stdout.write('\nSet power status for AW2401:\n')
-            for pid in args.power_id:
-                sys.stdout.write('  Power_id:{}, status: {:>3s}\n'.format(pid, args.power_status))
 
-        o_aw2401.switch(args.power_id, 1 if args.power_status == 'on' else 0)
+        if args.power_id and args.power_status:
+            if args.verbose:
+                sys.stdout.write('\nSet power status for AW2401:\n')
+                for pid in args.power_id:
+                    sys.stdout.write('  Power_id:{}, status: {:>3s}\n'.format(pid, args.power_status))
+
+            o_aw2401.switch(args.power_id, 1 if args.power_status == 'on' else 0)
+
         if args.get_status:
             #sys.stdout.write(o_aw2401.get_status())
             i = 1
-            sys.stdout.write('\nDump power status from AW2401:\n')
+            sys.stdout.write('\nGet power status from AW2401:\n')
             for status in o_aw2401.get_status():
                 sys.stdout.write('  Power_id:{}, status: {:>3s}\n'.format(i, status))
                 i=i+1

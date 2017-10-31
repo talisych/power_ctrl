@@ -92,7 +92,7 @@ class sp8h:
             sys.exit('Error:' + str(e))
 
         if response.status != http.client.OK:
-            sys.exit("Failed to login, status=" + response.status)
+            sys.exit("Failed to login, status={}".format(response.status))
 
         data = response.read()
 
@@ -128,7 +128,7 @@ class sp8h:
             sys.exit('Error:' + str(e))
 
         if response.status != http.client.OK:
-            sys.exit("Failed to logout, status=" + response.status)
+            sys.exit("Failed to login, status={}".format(response.status))
 
         self.is_login = False
 
@@ -161,7 +161,7 @@ class sp8h:
             sys.exit('Error:' + str(e))
 
         if response.status != http.client.OK:
-            sys.exit("Failed to login, status=" + response.status)
+            sys.exit("Failed to login, status={}".format(response.status))
 
     def get_status(self, machin_id=0):
         """
@@ -189,7 +189,7 @@ class sp8h:
             sys.exit('Error:' + str(e))
 
         if response.status != http.client.OK:
-            sys.exit("Failed to login, status=" + response.status)
+            sys.exit("Failed to login, status={}".format(response.status))
 
         html_data = response.read().decode("utf-8")
 
@@ -299,7 +299,7 @@ class aw2401:
             sys.exit('Error:' + str(e))
 
         if response.status != http.client.OK:
-            sys.exit("Failed to login, status=" + response.status)
+            sys.exit("Failed to login, status={}".format(response.status))
 
     def get_status(self):
         """
@@ -317,7 +317,7 @@ class aw2401:
             sys.exit('Error:' + str(e))
 
         if response.status != http.client.OK:
-            sys.exit("Failed to login, status=" + response.status)
+            sys.exit("Failed to login, status={}".format(response.status))
 
         html_data = response.read()
 
