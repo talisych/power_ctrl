@@ -75,6 +75,7 @@ def main():
             if args.power_id and args.power_status:
                 if args.verbose:
                     sys.stdout.write('\nSet power status for SP8H:\n')
+
                 for mid in args.machine_id:
                     for pid in args.power_id:
                         if args.verbose:
@@ -85,11 +86,12 @@ def main():
             if args.get_status:
                 sys.stdout.write('\nGet power status from SP8H:\n')
                 for mid in args.machine_id:
+                    sys.stdout.write('  Machine {}:\n'.format((mid)))
                     time.sleep(1)
                     status_data = o_sp8h.get_status(mid)
                     i = 1
                     for status in status_data:
-                        sys.stdout.write('  Machine: {}, power_id: {}, power_status {:>3s}\n'.format((mid), (i), 'off' if status[0] is '0' else 'on'))
+                        sys.stdout.write('    Power_id: {}, power_status {:>3s}\n'.format((i), 'off' if status[0] is '0' else 'on'))
                         i=i+1
 
             o_sp8h.logout()
