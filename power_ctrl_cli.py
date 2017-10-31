@@ -81,6 +81,7 @@ def main():
                     for pid in args.power_id:
                         if args.verbose:
                             sys.stdout.write('  Machine: {}, power_id: {}, power_status {:>3s}\n'.format((mid), (pid), (args.power_status)))
+                        # Delay for set power starus.
                         time.sleep(0.7)
                         o_sp8h.switch(mid, pid, 1 if args.power_status == 'on' else 2)
 
@@ -88,6 +89,7 @@ def main():
                 sys.stdout.write('\nGet power status from SP8H:\n')
                 for mid in args.machine_id:
                     sys.stdout.write('  Machine {}:\n'.format((mid)))
+                    # Delay for get power starus.
                     time.sleep(1)
                     status_data = o_sp8h.get_status(mid)
                     i = 1
@@ -122,7 +124,6 @@ def main():
                 sys.stdout.write('  Power_id:{}, status: {:>3s}\n'.format(i, status))
                 i=i+1
 
-        time.sleep(0.3)
         o_aw2401.disconnect()
 
     return
