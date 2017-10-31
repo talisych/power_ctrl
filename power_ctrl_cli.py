@@ -50,6 +50,7 @@ def main():
     #for debug
     #print(args)
     if not args.device:
+        parser.error('the following arguments are required: sp8h or aw2401')
         parser.print_help()
 
     if (not args.power_id and not args.power_status) and (not args.get_status):
