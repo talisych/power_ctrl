@@ -51,7 +51,6 @@ def main():
     #print(args)
     if not args.device:
         parser.error('the following arguments are required: sp8h or aw2401')
-        parser.print_help()
 
     if (not args.power_id and not args.power_status) and (not args.get_status):
         parser.error('the following arguments are required: --power-id/-p and --power_status/-s or --get_status/-g')
@@ -131,5 +130,5 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except (KeyboardInterrupt, SystemExit):
+    except (KeyboardInterrupt):
         sys.stdout.write("\nQuitting.\n")
