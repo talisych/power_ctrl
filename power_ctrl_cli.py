@@ -129,4 +129,7 @@ def main():
     return
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except (KeyboardInterrupt, SystemExit):
+        sys.stdout.write("\nQuitting.\n")
