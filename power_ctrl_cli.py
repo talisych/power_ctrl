@@ -32,7 +32,7 @@ def main():
     sp8h_parser.add_argument('--passwd'         , '-P', type=str        , help="Password for login SP8H", default='admin')
     sp8h_parser.add_argument('--machine-id'     , '-m', type=int        , help="Select machine id", nargs='+', choices=range(1,5), required=True)
     sp8h_parser.add_argument('--power-id'       , '-p', type=int        , help="Select power id", nargs='+', choices=range(1,9))
-    sp8h_parser.add_argument('--power-status'   , '-s', type=str        , help="Set power status", choices=['on', 'off'])
+    sp8h_parser.add_argument('--power-status'   , '-s', type=str        , help="Set power status", choices=['on', 'off', 'reset'])
     sp8h_parser.add_argument('--get-status'     , '-g', help="Get power status", action="store_true")
     sp8h_parser.add_argument('--verbose'        , '-v', help="Increase output verbosity", action="store_true")
 
@@ -82,7 +82,7 @@ def main():
                             sys.stdout.write('  Machine: {}, power_id: {}, power_status {:>3s}\n'.format((mid), (pid), (args.power_status)))
                         # Delay for set power starus.
                         time.sleep(0.7)
-                        o_sp8h.switch(mid, pid, 1 if args.power_status == 'on' else 2)
+                        o_sp8h.switch(mid, pid, 1 if args.power_status == 'on' else 2 if args.power_status == 'off' else 3)
 
             if args.get_status:
                 sys.stdout.write('\nGet power status from SP8H:\n')

@@ -14,6 +14,7 @@ class sp8h:
 
     POWER_OFF = 2
     POWER_ON = 1
+    POWER_RST = 3
 
     LOGIN_STS_OK = b'0'
     LOGIN_STS_FAIL = b'1'
@@ -140,7 +141,7 @@ class sp8h:
         if not self.is_login:
             sys.exit("Login first!")
 
-        if action != self.POWER_ON and action != self.POWER_OFF:
+        if action != self.POWER_ON and action != self.POWER_OFF and action != self.POWER_RST:
             sys.exit("Invalid action detected!")
 
         self.http_header = {"Cookie": self.cookie_db.output(header="", sep=";")}
