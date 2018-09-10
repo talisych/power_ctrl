@@ -197,16 +197,22 @@ class sp8h:
         #For Debug
         #print(html_data)
 
-        #Parse power status.
-        status_list = html_data.split("],[")[1][1:-1].split("','")
-        #print(status_list)
+        merge_list = []
+        if len(html_data) > 0 and html_data != "TimeOut":
+            try:
+                #Parse power status.
+                status_list = html_data.split("],[")[1][1:-1].split("','")
+                #print(status_list)
 
-        #Parse power ampere.
-        ampere_list = html_data.split("],[")[2][1:-3].split("','")
-        #print(ampere_list)
+                #Parse power ampere.
+                ampere_list = html_data.split("],[")[2][1:-3].split("','")
+                #print(ampere_list)
 
-        merge_list = [list(a) for a in zip(status_list, ampere_list)]
-        #print(merge_list)
+                merge_list = [list(a) for a in zip(status_list, ampere_list)]
+                #print(merge_list)
+            except (ValueError, IndexError) as e:
+                sys.exit('Error:' + str(e))
+
         return merge_list
 
 class aw2401:
