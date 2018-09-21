@@ -5,5 +5,7 @@
 
 # Build a executable file.
 ``` bash
-pyinstaller -F power_ctrl_cli.py -i if_power_2561374.ico --hidden-import=bs4
+pyinstaller -F power_ctrl_cli.py -i if_power_2561374.ico --onedir
+
+pyinstaller -F power_ctrl_cli.py -i if_power_2561374.ico --onefile
 ```
